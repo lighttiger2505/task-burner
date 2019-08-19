@@ -50,7 +50,22 @@ func newApp() *cli.App {
 			Aliases: []string{"l"},
 			Usage:   "List the burner list's",
 			Action:  ListCommand,
-			Flags:   []cli.Flag{},
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:     "recurse, R",
+					Usage:    "recurse into burner list",
+					EnvVar:   "",
+					FilePath: "",
+					Required: false,
+				},
+				cli.BoolFlag{
+					Name:     "tree, T",
+					Usage:    "tree into burner list",
+					EnvVar:   "",
+					FilePath: "",
+					Required: false,
+				},
+			},
 		},
 		cli.Command{
 			Name:    "edit",
@@ -119,7 +134,42 @@ func ListCommand(c *cli.Context) error {
 
 	burnerLists, err := ioutil.ReadDir(cfg.HomeDir)
 	if err != nil {
-		panic(err)
+		return err
+	}
+
+	if c.Bool("recurse") {
+		for _, burnerList := range burnerLists {
+			fmt.Println(fmt.Sprintf("%s:", burnerList.Name()))
+
+			burnerFiles, err := ioutil.ReadDir(filepath.Join(cfg.HomeDir, burnerList.Name()))
+			if err != nil {
+				return err
+			}
+			for _, burnerFile := range burnerFiles {
+				fmt.Println(burnerFile.Name())
+			}
+			fmt.Println("")
+		}
+		return nil
+	}
+
+	if c.Bool("tree") {
+		for _, burnerList := range burnerLists {
+			fmt.Println(burnerList.Name())
+
+			burnerFiles, err := ioutil.ReadDir(filepath.Join(cfg.HomeDir, burnerList.Name()))
+			if err != nil {
+				return err
+			}
+			for i, burnerFile := range burnerFiles {
+				if (i + 1) < len(burnerFiles) {
+					fmt.Println(fmt.Sprintf(" ├── %s", burnerFile.Name()))
+				} else {
+					fmt.Println(fmt.Sprintf(" └── %s", burnerFile.Name()))
+				}
+			}
+		}
+		return nil
 	}
 
 	for _, burnerList := range burnerLists {
