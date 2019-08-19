@@ -14,9 +14,11 @@ import (
 var configFilePath = filepath.Join(getXDGConfigPath(runtime.GOOS), "config.yml")
 
 type Config struct {
-	HomeDir     string   `yaml:"homedir"`
-	Editor      string   `yaml:"editor"`
-	BurnerNames []string `yaml:"burnernames"`
+	Version       float32  `yaml:"version"`
+	HomeDir       string   `yaml:"homedir"`
+	Editor        string   `yaml:"editor"`
+	EditorOptions []string `yaml:"editoroptions"`
+	BurnerNames   []string `yaml:"burnernames"`
 }
 
 func GetConfig() (*Config, error) {
@@ -109,16 +111,14 @@ func newConfig() *Config {
 }
 
 const (
-	FileNameFrontBurner = "1_front-burner.md"
-	FileNameBackBurner  = "2_back-burner.md"
-	FileNameKitchenSink = "3_kitchen-sink.md"
+	Version                = 1.0
+	FileNameFrontBurner    = "1_front-burner.md"
+	FileNameBackBurner     = "2_back-burner.md"
+	FileNameKitchenSink    = "3_kitchen-sink.md"
+	VimOptionOpenWindow    = "-o"
+	VimOptionCommand       = "-c"
+	VimOptionCommandLayout = "\"wincmd H\""
 )
-
-var BurnerFileNames = []string{
-	FileNameFrontBurner,
-	FileNameBackBurner,
-	FileNameKitchenSink,
-}
 
 func createNewConfig() error {
 	// Create new config file
@@ -130,6 +130,8 @@ func createNewConfig() error {
 	// Add default settings
 	cfg := newConfig()
 
+	cfg.Version = Version
+
 	configPath := getXDGConfigPath(runtime.GOOS)
 	diaryDirPath := filepath.Join(configPath, "_post")
 	cfg.HomeDir = diaryDirPath
@@ -139,8 +141,17 @@ func createNewConfig() error {
 		editor = "vim"
 	}
 	cfg.Editor = editor
+	cfg.EditorOptions = []string{
+		VimOptionOpenWindow,
+		VimOptionCommand,
+		VimOptionCommandLayout,
+	}
 
-	cfg.BurnerNames = BurnerFileNames
+	cfg.BurnerNames = []string{
+		FileNameFrontBurner,
+		FileNameBackBurner,
+		FileNameKitchenSink,
+	}
 
 	cfg.Save()
 	return nil

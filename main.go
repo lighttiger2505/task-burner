@@ -72,7 +72,16 @@ func newApp() *cli.App {
 			Aliases: []string{"e"},
 			Usage:   "Edit the burner list",
 			Action:  EditCommand,
-			Flags:   []cli.Flag{},
+			Flags:   []cli.Flag{
+				// TODO
+				// cli.BoolFlag{
+				// 	Name:     "editor-options, o",
+				// 	Usage:    "lptions for editor to open burner list",
+				// 	EnvVar:   "",
+				// 	FilePath: "",
+				// 	Required: false,
+				// },
+			},
 		},
 		cli.Command{
 			Name:    "rm",
@@ -206,7 +215,13 @@ func EditCommand(c *cli.Context) error {
 		fileNames = append(fileNames, burnerFile.Name())
 	}
 
-	if err := OpenEditor(cfg.Editor, fileNames...); err != nil {
+	cmdArgs := []string{}
+	if len(cfg.EditorOptions) > 0 {
+		cmdArgs = append(cmdArgs, cfg.EditorOptions...)
+	}
+	cmdArgs = append(cmdArgs, fileNames...)
+
+	if err := OpenEditor(cfg.Editor, cmdArgs...); err != nil {
 		return fmt.Errorf("failed edit, %s", err)
 	}
 	return nil
