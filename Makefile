@@ -23,6 +23,7 @@ verify: $(SRCS)
 .PHONY: ensure
 ensure: $(SRCS) verify tidy
 	export GO111MODULE=on; go mod download
+	export GO111MODULE=on; go mod vendor
 
 .PHONY: build
 build: $(SRCS) ensure
