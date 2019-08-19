@@ -191,7 +191,22 @@ func EditCommand(c *cli.Context) error {
 	listName := c.Args()[0]
 	listHome := filepath.Join(cfg.HomeDir, listName)
 
-	if err := OpenEditor(cfg.Editor, listHome); err != nil {
+	if !isFileExist(listHome) {
+		return fmt.Errorf("not found burner list: %s", listHome)
+	}
+
+	burnerFiles, err := ioutil.ReadDir(listHome)
+	if err != nil {
+		return err
+	}
+
+	fileNames := []string{}
+	for _, burnerFile := range burnerFiles {
+		fmt.Println(burnerFile.Name())
+		fileNames = append(fileNames, burnerFile.Name())
+	}
+
+	if err := OpenEditor(cfg.Editor, fileNames...); err != nil {
 		return fmt.Errorf("failed edit, %s", err)
 	}
 	return nil
