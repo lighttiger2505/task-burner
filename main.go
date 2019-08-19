@@ -30,10 +30,10 @@ func main() {
 
 func newApp() *cli.App {
 	app := cli.NewApp()
-	app.Name = "liary"
-	app.HelpName = "liary"
-	app.Usage = "liary is fastest cli tool for create a diary."
-	app.UsageText = "liary [options] [write content for diary]"
+	app.Name = "task-burner"
+	app.HelpName = "tabn"
+	app.Usage = "Let's editing the burner list."
+	app.UsageText = "tabn [command] [--option]"
 	app.Version = "0.0.1"
 	app.Author = "lighttiger2505"
 	app.Email = "lighttiger2505@gmail.com"
