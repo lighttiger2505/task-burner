@@ -123,7 +123,7 @@ func ListCommand(c *cli.Context) error {
 	}
 
 	for _, burnerList := range burnerLists {
-		fmt.Println(burnerList)
+		fmt.Println(burnerList.Name())
 	}
 	return nil
 }
