@@ -98,12 +98,7 @@ func AddCommand(c *cli.Context) error {
 		return fmt.Errorf("cannot create directory, %s", err)
 	}
 
-	bunnerFileNames := []string{
-		"1_front-burner.md",
-		"2_back-burner.md",
-		"3_kitchen-sink.md",
-	}
-	for _, burnnerFileName := range bunnerFileNames {
+	for _, burnnerFileName := range cfg.BurnerNames {
 		newPath := filepath.Join(listHome, burnnerFileName)
 		if _, err := os.Create(newPath); err != nil {
 			if err := os.RemoveAll(listHome); err != nil {

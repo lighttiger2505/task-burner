@@ -14,8 +14,9 @@ import (
 var configFilePath = filepath.Join(getXDGConfigPath(runtime.GOOS), "config.yml")
 
 type Config struct {
-	HomeDir string `yaml:"homedir"`
-	Editor  string `yaml:"editor"`
+	HomeDir     string   `yaml:"homedir"`
+	Editor      string   `yaml:"editor"`
+	BurnerNames []string `yaml:"burnernames"`
 }
 
 func GetConfig() (*Config, error) {
@@ -107,6 +108,18 @@ func newConfig() *Config {
 	return cfg
 }
 
+const (
+	FileNameFrontBurner = "1_front-burner.md"
+	FileNameBackBurner  = "2_back-burner.md"
+	FileNameKitchenSink = "3_kitchen-sink.md"
+)
+
+var BurnerFileNames = []string{
+	FileNameFrontBurner,
+	FileNameBackBurner,
+	FileNameKitchenSink,
+}
+
 func createNewConfig() error {
 	// Create new config file
 	_, err := os.Create(configFilePath)
@@ -126,6 +139,8 @@ func createNewConfig() error {
 		editor = "vim"
 	}
 	cfg.Editor = editor
+
+	cfg.BurnerNames = BurnerFileNames
 
 	cfg.Save()
 	return nil
