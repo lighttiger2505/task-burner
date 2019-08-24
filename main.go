@@ -211,8 +211,7 @@ func EditCommand(c *cli.Context) error {
 
 	fileNames := []string{}
 	for _, burnerFile := range burnerFiles {
-		fmt.Println(burnerFile.Name())
-		fileNames = append(fileNames, burnerFile.Name())
+		fileNames = append(fileNames, filepath.Join(listHome, burnerFile.Name()))
 	}
 
 	cmdArgs := []string{}
