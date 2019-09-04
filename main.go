@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/urfave/cli"
 )
 
@@ -188,18 +189,27 @@ func ListCommand(c *cli.Context) error {
 }
 
 func EditCommand(c *cli.Context) error {
-	if len(c.Args()) == 0 {
-		return errors.New("the required arguments were not provided: <burner list name>")
-	}
-
 	cfg, err := GetConfig()
 	if err != nil {
 		return err
 	}
 
-	listName := c.Args()[0]
-	listHome := filepath.Join(cfg.HomeDir, listName)
+	var listName string
+	if len(c.Args()) != 0 {
+		listName = c.Args()[0]
+	} else {
+		var err error
+		listName, err = fuzzyfindBurnerList()
+		fmt.Println(listName)
+		if err != nil {
+			return err
+		}
+		if listName == "" {
+			return nil
+		}
+	}
 
+	listHome := filepath.Join(cfg.HomeDir, listName)
 	if !isFileExist(listHome) {
 		return fmt.Errorf("not found burner list: %s", listHome)
 	}
@@ -224,6 +234,33 @@ func EditCommand(c *cli.Context) error {
 		return fmt.Errorf("failed edit, %s", err)
 	}
 	return nil
+}
+
+func fuzzyfindBurnerList() (string, error) {
+	cfg, err := GetConfig()
+	if err != nil {
+		return "", err
+	}
+
+	burnerLists, err := ioutil.ReadDir(cfg.HomeDir)
+	if err != nil {
+		return "", err
+	}
+
+	index, err := fuzzyfinder.Find(
+		burnerLists,
+		func(i int) string {
+			return burnerLists[i].Name()
+		},
+	)
+
+	if err != nil {
+		if err.Error() == fuzzyfinder.ErrAbort.Error() {
+			return "", nil
+		}
+		return "", err
+	}
+	return burnerLists[index].Name(), nil
 }
 
 func RemoveCommand(c *cli.Context) error {
