@@ -249,7 +249,7 @@ func fuzzyfindBurnerList() (string, error) {
 
 	if err != nil {
 		if err.Error() == fuzzyfinder.ErrAbort.Error() {
-			return "", nil
+			return "", errors.New("interrupted")
 		}
 		return "", err
 	}
