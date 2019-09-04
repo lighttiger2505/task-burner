@@ -12,6 +12,7 @@ import (
 
 	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/lighttiger2505/task-burner/internal/config"
+	"github.com/lighttiger2505/task-burner/internal/task"
 	"github.com/urfave/cli"
 )
 
@@ -138,12 +139,7 @@ func AddCommand(c *cli.Context) error {
 }
 
 func ListCommand(c *cli.Context) error {
-	cfg, err := config.GetConfig()
-	if err != nil {
-		return err
-	}
-
-	burnerLists, err := ioutil.ReadDir(cfg.HomeDir)
+	burnerLists, err := task.GetBurnerLists()
 	if err != nil {
 		return err
 	}
@@ -152,7 +148,7 @@ func ListCommand(c *cli.Context) error {
 		for _, burnerList := range burnerLists {
 			fmt.Println(fmt.Sprintf("%s:", burnerList.Name()))
 
-			burnerFiles, err := ioutil.ReadDir(filepath.Join(cfg.HomeDir, burnerList.Name()))
+			burnerFiles, err := task.GetTaskFiles(burnerList.Name())
 			if err != nil {
 				return err
 			}
@@ -168,7 +164,7 @@ func ListCommand(c *cli.Context) error {
 		for _, burnerList := range burnerLists {
 			fmt.Println(burnerList.Name())
 
-			burnerFiles, err := ioutil.ReadDir(filepath.Join(cfg.HomeDir, burnerList.Name()))
+			burnerFiles, err := task.GetTaskFiles(burnerList.Name())
 			if err != nil {
 				return err
 			}
@@ -238,12 +234,7 @@ func EditCommand(c *cli.Context) error {
 }
 
 func fuzzyfindBurnerList() (string, error) {
-	cfg, err := config.GetConfig()
-	if err != nil {
-		return "", err
-	}
-
-	burnerLists, err := ioutil.ReadDir(cfg.HomeDir)
+	burnerLists, err := task.GetBurnerLists()
 	if err != nil {
 		return "", err
 	}

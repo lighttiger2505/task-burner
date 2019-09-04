@@ -21,12 +21,21 @@ type Config struct {
 	BurnerNames   []string `yaml:"burnernames"`
 }
 
-func GetConfig() (*Config, error) {
+var loadedConfig *Config
+
+func loadConfig() (*Config, error) {
 	cfg := newConfig()
 	if err := cfg.Load(); err != nil {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+func GetConfig() (*Config, error) {
+	if loadedConfig != nil {
+		return loadedConfig, nil
+	}
+	return loadConfig()
 }
 
 func (c *Config) Path() string {
