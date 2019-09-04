@@ -13,6 +13,7 @@ import (
 	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/lighttiger2505/task-burner/internal/config"
 	"github.com/lighttiger2505/task-burner/internal/task"
+	"github.com/lighttiger2505/task-burner/internal/ui"
 	"github.com/urfave/cli"
 )
 
@@ -268,8 +269,19 @@ func RemoveCommand(c *cli.Context) error {
 	listName := c.Args()[0]
 	listHome := filepath.Join(cfg.HomeDir, listName)
 
-	if err := os.RemoveAll(listHome); err != nil {
-		return fmt.Errorf("cannot remove burner list, %s", err)
+	if !config.IsFileExists(listHome) {
+		return fmt.Errorf("not found burner list: %s", listHome)
+	}
+
+	in, err := ui.Ask(fmt.Sprintf("remove burner list '%s'? (y/n)", listHome))
+	if err != nil {
+		return err
+	}
+
+	if in == "y" || in == "yes" {
+		if err := os.RemoveAll(listHome); err != nil {
+			return fmt.Errorf("cannot remove burner list, %s", err)
+		}
 	}
 
 	return nil
