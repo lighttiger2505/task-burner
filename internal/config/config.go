@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"fmt"
@@ -38,7 +38,7 @@ func (c *Config) Read() (string, error) {
 		return "", fmt.Errorf("cannot create directory, %s", err)
 	}
 
-	if !isFileExist(configFilePath) {
+	if !IsFileExists(configFilePath) {
 		_, err := os.Create(configFilePath)
 		if err != nil {
 			return "", fmt.Errorf("cannot create config, %s", err.Error())
@@ -64,7 +64,7 @@ func (c *Config) Load() error {
 		return fmt.Errorf("cannot create directory, %s", err)
 	}
 
-	if !isFileExist(configFilePath) {
+	if !IsFileExists(configFilePath) {
 		if err := createNewConfig(); err != nil {
 			return err
 		}
@@ -157,7 +157,7 @@ func createNewConfig() error {
 	return nil
 }
 
-func isFileExist(fPath string) bool {
+func IsFileExists(fPath string) bool {
 	_, err := os.Stat(fPath)
 	return err == nil || !os.IsNotExist(err)
 }

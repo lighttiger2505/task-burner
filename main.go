@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/ktr0731/go-fuzzyfinder"
+	"github.com/lighttiger2505/task-burner/internal/config"
 	"github.com/urfave/cli"
 )
 
@@ -107,7 +108,7 @@ func AddCommand(c *cli.Context) error {
 		return errors.New("the required arguments were not provided: <burner list name>")
 	}
 
-	cfg, err := GetConfig()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		return err
 	}
@@ -115,7 +116,7 @@ func AddCommand(c *cli.Context) error {
 	listName := c.Args()[0]
 	listHome := filepath.Join(cfg.HomeDir, listName)
 
-	if isFileExist(listHome) {
+	if config.IsFileExists(listHome) {
 		return fmt.Errorf("the duplicated burner list: %s", listName)
 	}
 
@@ -137,7 +138,7 @@ func AddCommand(c *cli.Context) error {
 }
 
 func ListCommand(c *cli.Context) error {
-	cfg, err := GetConfig()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		return err
 	}
@@ -189,7 +190,7 @@ func ListCommand(c *cli.Context) error {
 }
 
 func EditCommand(c *cli.Context) error {
-	cfg, err := GetConfig()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		return err
 	}
@@ -210,7 +211,7 @@ func EditCommand(c *cli.Context) error {
 	}
 
 	listHome := filepath.Join(cfg.HomeDir, listName)
-	if !isFileExist(listHome) {
+	if !config.IsFileExists(listHome) {
 		return fmt.Errorf("not found burner list: %s", listHome)
 	}
 
@@ -237,7 +238,7 @@ func EditCommand(c *cli.Context) error {
 }
 
 func fuzzyfindBurnerList() (string, error) {
-	cfg, err := GetConfig()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		return "", err
 	}
@@ -268,7 +269,7 @@ func RemoveCommand(c *cli.Context) error {
 		return errors.New("the required arguments were not provided: <burner list name>")
 	}
 
-	cfg, err := GetConfig()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		return err
 	}
@@ -284,7 +285,7 @@ func RemoveCommand(c *cli.Context) error {
 }
 
 func ConfigCommand(c *cli.Context) error {
-	cfg, err := GetConfig()
+	cfg, err := config.GetConfig()
 	if err != nil {
 		return err
 	}
