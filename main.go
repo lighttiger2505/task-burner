@@ -76,15 +76,21 @@ func newApp() *cli.App {
 			Aliases: []string{"e"},
 			Usage:   "Edit the burner list",
 			Action:  EditCommand,
-			Flags:   []cli.Flag{
-				// TODO
-				// cli.BoolFlag{
-				// 	Name:     "editor-options, o",
-				// 	Usage:    "lptions for editor to open burner list",
-				// 	EnvVar:   "",
-				// 	FilePath: "",
-				// 	Required: false,
-				// },
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "editor, e",
+					Usage:    "option for editor to open burner list",
+					EnvVar:   "",
+					FilePath: "",
+					Required: false,
+				},
+				cli.StringSliceFlag{
+					Name:     "editor-option, o",
+					Usage:    "option for editor to open burner list",
+					EnvVar:   "",
+					FilePath: "",
+					Required: false,
+				},
 			},
 		},
 		cli.Command{
@@ -222,13 +228,24 @@ func EditCommand(c *cli.Context) error {
 		fileNames = append(fileNames, filepath.Join(listHome, burnerFile.Name()))
 	}
 
-	cmdArgs := []string{}
-	if len(cfg.EditorOptions) > 0 {
-		cmdArgs = append(cmdArgs, cfg.EditorOptions...)
+	// Integration editor command from config and flags
+	editorFlag := c.String("editor")
+	editorCmd := cfg.Editor
+	if editorFlag != "" {
+		editorCmd = editorFlag
 	}
-	cmdArgs = append(cmdArgs, fileNames...)
 
-	if err := OpenEditor(cfg.Editor, cmdArgs...); err != nil {
+	// Integration editor command options from config and flags
+	editorOptsFlag := c.StringSlice("editor-option")
+	editorOpts := cfg.EditorOptions
+	if len(editorOptsFlag) > 0 {
+		editorOpts = editorOptsFlag
+	}
+	editorArgs := []string{}
+	editorArgs = append(editorArgs, editorOpts...)
+	editorArgs = append(editorArgs, fileNames...)
+
+	if err := OpenEditor(editorCmd, editorArgs...); err != nil {
 		return fmt.Errorf("failed edit, %s", err)
 	}
 	return nil
